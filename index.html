@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="AI-Based Landslide Early Warning System for North Eastern Region of India"/>
+<title>Early Shield - AI Landslide Early Warning System</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/early-shield-logo.svg"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+<div class="offline-banner">You are offline. Cached data shown. Will sync when reconnected.</div>
+<nav id="navbar">
+<div class="nav-container">
+ <a href="#hero" class="nav-logo">
+ <img class="nav-logo-icon" src="assets/img/early-shield-logo.svg?v=5" alt="Early Shield"/>
+ <div class="nav-logo-text"><strong>Early Shield</strong><span>AI Early Warning System</span></div>
+ </a>
+ <div class="nav-links">
+ <a href="#hero" class="nav-link active" data-i18n="nav_home">Home</a>
+ <a href="#dashboard" class="nav-link" data-i18n="nav_dashboard">Dashboard</a>
+ <a href="#map-section" class="nav-link" data-i18n="nav_map">GIS Map</a>
+ <a href="#alerts" class="nav-link" data-i18n="nav_alerts">Alerts</a>
+ <a href="#analytics" class="nav-link" data-i18n="nav_analytics">Analytics</a>
+ <a href="#weather" class="nav-link" data-i18n="nav_weather">Weather</a>
+ <a href="#sensors" class="nav-link" data-i18n="nav_sensors">Sensors</a>
+ <a href="#field-report" class="nav-link" data-i18n="nav_report">Field Report</a>
+ <a href="#response" class="nav-link" data-i18n="nav_response">Response</a>
+ </div>
+ <div class="nav-actions">
+ <div id="alert-bell" title="Active Alerts" style="position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;width:36px;height:36px;" onclick="document.getElementById('alerts').scrollIntoView({behavior:'smooth'})"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#f47920" style="filter:drop-shadow(0 1px 3px rgba(0,0,0,.3));"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5S10.5 3.17 10.5 4v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg><span id="alert-count" style="position:absolute;top:-4px;right:-4px;background:#c0392b;color:#fff;font-size:.6rem;font-weight:900;min-width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #003366;z-index:2;line-height:1;">7</span></div>
+ <button class="lang-selector" data-lang-open title="Language" onclick="var m=document.getElementById('lang-modal');if(m){m.style.display='flex';m.classList.add('active')}"> EN</button>
+ <button class="btn btn-danger btn-sm" id="nav-sos" type="button" onclick="triggerSOSAlert()"> SOS</button>
+ </div>
+ <div class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></div>
+</div>
+</nav>
+<div class="live-ticker"><div class="container"><div class="ticker-inner"><div class="ticker-label">LIVE ALERTS</div><div class="ticker-track"><div class="ticker-content"></div></div></div></div></div>
+<div class="mobile-menu" id="mobile-menu">
+<div class="mobile-nav-links">
+ <a href="#hero" class="mobile-nav-link"> Home</a>
+ <a href="#dashboard" class="mobile-nav-link">&#128202; Dashboard</a>
+ <a href="#map-section" class="mobile-nav-link">&#128506; GIS Map</a>
+ <a href="#alerts" class="mobile-nav-link">&#128276; Alerts</a>
+ <a href="#analytics" class="mobile-nav-link">&#128200; Analytics</a>
+ <a href="#weather" class="mobile-nav-link">&#127783; Weather</a>
+ <a href="#sensors" class="mobile-nav-link">&#128225; Sensors</a>
+ <a href="#field-report" class="mobile-nav-link">&#128203; Field Report</a>
+ <a href="#response" class="mobile-nav-link">&#128641; Response</a>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;margin-top:24px;">
+ <button class="btn btn-danger" id="mob-sos-btn" type="button" onclick="triggerSOSAlert()"> SOS Alert</button>
+ <button class="btn btn-outline" data-lang-open onclick="var m=document.getElementById('lang-modal');if(m){m.style.display='flex';m.classList.add('active')}"> Change Language</button>
+</div>
+</div>
+
+<section id="hero">
+<div class="hero-bg"></div>
+<div class="hero-grid-overlay"></div>
+<div class="container">
+ <div class="grid-2" style="align-items:center;gap:60px;padding:40px 0;">
+ <div class="hero-content">
+ <div class="hero-badge"><span class="dot"></span> 🛰️ REAL-TIME MONITORING ACTIVE &bull; NORTH EAST INDIA</div>
+ <h1 class="hero-title" data-i18n="hero_title">AI-Powered <span class="highlight">Landslide</span><br/>Early Warning System</h1>
+ <p class="hero-description">Real-time monitoring, predictive analytics and automated alerts for disaster preparedness across the <strong style="color:var(--text-primary)">8 states of North Eastern India</strong>.</p>
+ <div class="hero-cta">
+ <a href="#dashboard" class="btn btn-primary btn-lg">&#128202; View Dashboard</a>
+ <a href="#map-section" class="btn btn-outline btn-lg">&#128506; Open GIS Map</a>
+ <a href="#field-report" class="btn btn-warning btn-lg">&#128203; File Report</a>
+ </div>
+ <div class="hero-stats">
+ <div class="hero-stat"><span class="number" data-count="162" data-suffix="">162</span><span class="label">Districts Monitored</span></div>
+ <div class="hero-stat"><span class="number" data-count="48" data-suffix="">48</span><span class="label">Active Sensors</span></div>
+ <div class="hero-stat"><span class="number" data-count="94" data-suffix="%">94%</span><span class="label">AI Accuracy</span></div>
+ </div>
+ </div>
+ <div class="hero-visual fade-in" style="position:relative;">
+ <div class="hero-map-preview" style="position:relative;">
+ <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=89.0%2C22.5%2C97.5%2C29.5&layer=mapnik" style="width:100%;height:320px;border:none;display:block;" title="NER Overview Map" loading="lazy"></iframe>
+ <div class="map-overlay-card">
+ <div class="title" style="color:#f47920;margin-bottom:6px;font-weight:700;">Active Alerts</div>
+ <div style="font-size:.78rem;display:flex;flex-direction:column;gap:3px;">
+ <div><span style="color:#e74c3c;font-weight:700;">&#9679; 6</span> Critical zones</div>
+ <div><span style="color:#f39c12;font-weight:700;">&#9679; 14</span> High risk zones</div>
+ <div><span style="color:#27ae60;font-weight:700;">&#9679; 76</span> Safe zones</div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+</div>
+</section>
+
+
+<div class="risk-band">
+<div class="container">
+ <div class="risk-band-inner">
+ <div class="risk-item"><div class="risk-circle high">6</div><div class="risk-info"><div class="label">Critical Zones</div><div class="value" style="color:#e74c3c;">CRITICAL</div></div></div>
+ <div class="risk-divider"></div>
+ <div class="risk-item"><div class="risk-circle medium">14</div><div class="risk-info"><div class="label">High Risk Zones</div><div class="value" style="color:#f39c12;">HIGH ALERT</div></div></div>
+ <div class="risk-divider"></div>
+ <div class="risk-item"><div class="risk-circle monitoring">28</div><div class="risk-info"><div class="label">Under Watch</div><div class="value" style="color:#60a5fa;">MONITORING</div></div></div>
+ <div class="risk-divider"></div>
+ <div class="risk-item"><div class="risk-circle low">76</div><div class="risk-info"><div class="label">Safe Zones</div><div class="value" style="color:#27ae60;">SAFE</div></div></div>
+ <div class="risk-divider"></div>
+ <div class="risk-item"><div style="font-size:1.5rem;">&#129302;</div><div class="risk-info"><div class="label">AI Model</div><div class="value" style="color:#60a5fa;">v4.2 LIVE</div></div></div>
+ <div class="last-updated" id="last-updated-time">Last updated: --:--:-- IST</div>
+ </div>
+</div>
+</div>
+
+
+<section id="dashboard" class="section">
+<div class="container">
+ <div class="section-label">&#128202; Real-Time Dashboard</div>
+ <h2 class="section-title">📋 Situation Overview</h2>
+ <p class="section-subtitle">Live data from sensors, satellites, and AI predictive models across NER districts</p>
+ <div class="grid-4 fade-in" style="margin-bottom:24px;">
+ <div class="card card-danger">
+ <div class="stat-card"><div class="stat-icon red">🚨</div><div class="stat-body">
+ <div class="number" style="color:#e74c3c;">6</div>
+ <div class="label">Critical Risk Zones</div>
+ <div class="change change-up">&#8593; 2 from yesterday</div>
+ </div></div>
+ <div class="risk-meter"><div class="risk-meter-bar"><div class="risk-meter-fill" data-width="89" style="background:#e74c3c;"></div></div>
+ <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-muted);margin-top:4px;"><span>Risk Index</span><span style="color:#e74c3c;font-weight:700;">89/100</span></div></div>
+ </div>
+ <div class="card card-warning">
+ <div class="stat-card"><div class="stat-icon orange">🌧️</div><div class="stat-body">
+ <div class="number" style="color:#f39c12;">187</div>
+ <div class="label">Peak Rainfall mm/hr</div>
+ <div class="change change-up">&#8593; 42mm from 6hr ago</div>
+ </div></div>
+ <div class="risk-meter"><div class="risk-meter-bar"><div class="risk-meter-fill" data-width="75" style="background:#f39c12;"></div></div>
+ <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-muted);margin-top:4px;"><span>Cherrapunji Station</span><span style="color:#f39c12;font-weight:700;">75%</span></div></div>
+ </div>
+ <div class="card">
+ <div class="stat-card"><div class="stat-icon blue">&#128225;</div><div class="stat-body">
+ <div class="number" style="color:#60a5fa;">48</div>
+ <div class="label">Active Sensor Nodes</div>
+ <div class="change" style="color:#f39c12;">! 1 offline (Kohima)</div>
+ </div></div>
+ <div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;">
+ <span class="badge badge-success">43 Online</span>
+ <span class="badge badge-warning">4 Warning</span>
+ <span class="badge badge-danger">1 Offline</span>
+ </div>
+ </div>
+ <div class="card">
+ <div class="stat-card"><div class="stat-icon purple">&#129302;</div><div class="stat-body">
+ <div class="number" style="color:#a78bfa;">94%</div>
+ <div class="label">AI Model Accuracy</div>
+ <div class="change change-down">&#8593; 2.3% this month</div>
+ </div></div>
+ <div style="margin-top:12px;font-size:.78rem;color:var(--text-muted);">
+ <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span>RandomForest</span><span style="color:#a78bfa;">91%</span></div>
+ <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span>LSTM Neural Net</span><span style="color:#a78bfa;">93%</span></div>
+ <div style="display:flex;justify-content:space-between;"><span>XGBoost Ensemble</span><span style="color:#a78bfa;">94%</span></div>
+ </div>
+ </div>
+ </div>
+ <div class="grid-4 fade-in" style="margin-bottom:24px;">
+ <div class="card"><div class="stat-card"><div class="stat-icon teal">👥</div><div class="stat-body"><div class="number" style="color:#2dd4bf;">23,840</div><div class="label">People in Risk Zones</div><div class="change change-up">&#8593; 1,200 since morning</div></div></div></div>
+ <div class="card"><div class="stat-card"><div class="stat-icon red">🛣️</div><div class="stat-body"><div class="number" style="color:#e74c3c;">12</div><div class="label">Roads at Risk</div><div class="change change-up">&#8593; 3 new (NH-13, NH-44, NH-6)</div></div></div></div>
+ <div class="card"><div class="stat-card"><div class="stat-icon green">&#128241;</div><div class="stat-body"><div class="number" style="color:#4ade80;">1,847</div><div class="label">SMS Alerts Sent Today</div><div class="change change-down">98.6% delivered</div></div></div></div>
+ <div class="card"><div class="stat-card"><div class="stat-icon orange">&#128641;</div><div class="stat-body"><div class="number" style="color:#fb923c;">7</div><div class="label">NDRF Teams Deployed</div><div class="change" style="color:#60a5fa;">3 on standby</div></div></div></div>
+ </div>
+ <div class="card full-width fade-in">
+ <div class="flex-between" style="margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+ <h4>&#128739; Road Connectivity Status &mdash; Critical NH Routes</h4>
+ <span class="badge badge-warning">12 Routes at Risk</span>
+ </div>
+ <div class="table-wrap">
+ <table class="data-table">
+ <thead><tr><th>Route</th><th>Section</th><th>Status</th><th>Risk</th><th>Rainfall</th><th>Alternate</th><th>Action</th></tr></thead>
+ <tbody>
+ <tr><td><strong>NH-13</strong></td><td>Km 34-67 (Tawang)</td><td><span class="badge badge-danger">AT RISK</span></td><td><span style="color:#e74c3c;font-weight:700;">CRITICAL</span></td><td>142 mm/hr</td><td>Via Tenga Valley (+3.5hr)</td><td><button class="btn btn-danger btn-sm" onclick="showToast('danger','NH-13 Alert','Emergency advisory issued for NH-13.',5000)">Alert</button></td></tr>
+ <tr><td><strong>NH-27</strong></td><td>Papum Pare section</td><td><span class="badge badge-danger">AT RISK</span></td><td><span style="color:#e74c3c;font-weight:700;">CRITICAL</span></td><td>135 mm/hr</td><td>Via Rono Hills</td><td><button class="btn btn-danger btn-sm" onclick="showToast('danger','NH-27 Alert','Emergency advisory issued for NH-27.',5000)">Alert</button></td></tr>
+ <tr><td><strong>NH-6</strong></td><td>Km 12-28 (Cherrapunji)</td><td><span class="badge badge-warning">WARNING</span></td><td><span style="color:#f39c12;font-weight:700;">HIGH</span></td><td>187 mm/hr</td><td>Via Shillong Bypass</td><td><button class="btn btn-warning btn-sm" onclick="showToast('warning','NH-6 Warning','Warning advisory issued for NH-6.',4000)">Alert</button></td></tr>
+ <tr><td><strong>NH-44</strong></td><td>Senapati Km 34</td><td><span class="badge badge-warning">WARNING</span></td><td><span style="color:#f39c12;font-weight:700;">HIGH</span></td><td>112 mm/hr</td><td>Via Imphal Bypass</td><td><button class="btn btn-warning btn-sm" onclick="showToast('warning','NH-44 Warning','Warning issued for NH-44.',4000)">Alert</button></td></tr>
+ <tr><td><strong>NH-37</strong></td><td>Haflong bypass</td><td><span class="badge badge-info">WATCH</span></td><td><span style="color:#60a5fa;font-weight:700;">MEDIUM</span></td><td>89 mm/hr</td><td>NH-54 alternate</td><td><button class="btn btn-outline btn-sm" onclick="showToast('info','NH-37 Watch','NH-37 added to watch list.',3000)">Watch</button></td></tr>
+ <tr><td><strong>NH-102</strong></td><td>Nagaland section</td><td><span class="badge badge-success">OPEN</span></td><td><span style="color:#27ae60;font-weight:700;">LOW</span></td><td>68 mm/hr</td><td>Not required</td><td><button class="btn btn-ghost btn-sm">Monitor</button></td></tr>
+ </tbody>
+ </table>
+ </div>
+ </div>
+</div>
+</section>
+
+
+<section id="map-section" class="section" style="padding-top:40px;">
+<div class="container">
+ <div class="section-label">&#128506; GIS Mapping</div>
+ <h2 class="section-title">🗺️ Interactive Risk Heatmap</h2>
+ <p class="section-subtitle">Real-time visualization of landslide-prone areas, vulnerable infrastructure, and active monitoring zones</p>
+ <div class="map-sidebar fade-in">
+ <div class="map-container">
+ <div class="map-toolbar">
+ <div class="map-controls">
+ <button class="map-filter-btn active" data-filter="all">All Risks</button>
+ <button class="map-filter-btn" data-filter="critical">Critical</button>
+ <button class="map-filter-btn" data-filter="sensors">Sensors</button>
+ <button class="map-filter-btn" data-filter="roads">Roads</button>
+ <button class="map-filter-btn" data-filter="villages">Villages</button>
+ </div>
+ <div class="view-toggle">
+ <button class="view-btn active" data-view="map">GIS Map</button>
+ <button class="view-btn" data-view="satellite">Satellite</button>
+ </div>
+ </div>
+ <div id="main-map" style="position:relative;padding:0;height:480px;">
+  <div style="position:absolute;top:12px;right:12px;background:rgba(0,51,102,.92);color:white;border-radius:4px;padding:10px 14px;font-size:.78rem;z-index:500;max-width:200px;">
+    <div style="font-weight:700;color:#f47920;margin-bottom:8px;font-size:.82rem;">Risk Zones — NER</div>
+    <div style="margin-bottom:4px;display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:#c0392b;display:inline-block;flex-shrink:0;"></span>Critical: 6 zones</div>
+    <div style="margin-bottom:4px;display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:#f47920;display:inline-block;flex-shrink:0;"></span>High: 14 zones</div>
+    <div style="margin-bottom:4px;display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:#d4ac0d;display:inline-block;flex-shrink:0;"></span>Medium: 28 zones</div>
+    <div style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:#1a7a3e;display:inline-block;flex-shrink:0;"></span>Safe: 76 zones</div>
+  </div>
+</div>
+ <div class="map-legend">
+ <div class="legend-item"><div class="legend-dot critical"></div>Critical (&gt;80%)</div>
+ <div class="legend-item"><div class="legend-dot high"></div>High (60-80%)</div>
+ <div class="legend-item"><div class="legend-dot medium"></div>Medium (40-60%)</div>
+ <div class="legend-item"><div class="legend-dot safe"></div>Low (&lt;40%)</div>
+ <div style="margin-left:auto;font-size:.78rem;color:var(--text-muted);">Click marker for details</div>
+ </div>
+ </div>
+ <div>
+ <div class="card" style="margin-bottom:16px;">
+ <h4 style="margin-bottom:16px;">&#128205; Location Details</h4>
+ <div id="map-side-panel">
+ <div style="text-align:center;padding:20px;color:var(--text-muted);">
+ <div style="font-size:2rem;margin-bottom:8px;">&#128506;</div>
+ <p style="font-size:.88rem;">Click any map marker to view detailed risk information</p>
+ </div>
+ </div>
+ </div>
+ <div class="card">
+ <h4 style="margin-bottom:14px;">&#128202; Zone Summary</h4>
+ <div style="display:flex;flex-direction:column;gap:10px;">
+ <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:.85rem;display:flex;align-items:center;gap:6px;"><span style="color:#e74c3c;">&#9679;</span> Critical</span><div style="flex:1;margin:0 12px;"><div class="risk-meter-bar"><div style="width:5%;height:100%;border-radius:3px;background:#e74c3c;"></div></div></div><span style="font-size:.85rem;font-weight:700;color:#e74c3c;">6</span></div>
+ <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:.85rem;display:flex;align-items:center;gap:6px;"><span style="color:#f39c12;">&#9679;</span> High</span><div style="flex:1;margin:0 12px;"><div class="risk-meter-bar"><div style="width:11%;height:100%;border-radius:3px;background:#f39c12;"></div></div></div><span style="font-size:.85rem;font-weight:700;color:#f39c12;">14</span></div>
+ <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:.85rem;display:flex;align-items:center;gap:6px;"><span style="color:#f1c40f;">&#9679;</span> Medium</span><div style="flex:1;margin:0 12px;"><div class="risk-meter-bar"><div style="width:22%;height:100%;border-radius:3px;background:#f1c40f;"></div></div></div><span style="font-size:.85rem;font-weight:700;color:#f1c40f;">28</span></div>
+ <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:.85rem;display:flex;align-items:center;gap:6px;"><span style="color:#27ae60;">&#9679;</span> Safe</span><div style="flex:1;margin:0 12px;"><div class="risk-meter-bar"><div style="width:62%;height:100%;border-radius:3px;background:#27ae60;"></div></div></div><span style="font-size:.85rem;font-weight:700;color:#27ae60;">76</span></div>
+ </div>
+ <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+ <button class="btn btn-primary" style="width:100%;" onclick="showToast('info','Export','GIS data export initiated in GeoJSON format',3000)">&#128229; Export GIS Data</button>
+ </div>
+ </div>
+ </div>
+ </div>
+</div>
+</section>
+
+
+<section id="alerts" class="section" style="padding-top:40px;">
+<div class="container">
+ <div class="flex-between" style="margin-bottom:8px;flex-wrap:wrap;gap:12px;">
+ <div>
+ <div class="section-label">&#128276; Alert Management</div>
+ <h2 style="font-size:2rem;">🚨 Active Alerts &amp; Warnings</h2>
+ </div>
+ <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+ <div style="display:flex;gap:6px;">
+ <button class="alert-filter-btn active" data-filter="all">All</button>
+ <button class="alert-filter-btn" data-filter="critical">Critical</button>
+ <button class="alert-filter-btn" data-filter="high">High</button>
+ <button class="alert-filter-btn" data-filter="medium">Medium</button>
+ </div>
+ <button class="btn btn-danger" onclick="showToast('danger','BROADCAST','Emergency broadcast sent to all 8 NER states. 1,847 SMS alerts dispatched.',8000)">&#128226; Broadcast All</button>
+ </div>
+ </div>
+ <p class="section-subtitle" style="text-align:left;margin-bottom:24px;">AI-generated alerts ranked by urgency. <span id="alert-count" style="color:#e74c3c;font-weight:700;">7</span> active alerts across NER.</p>
+ <div id="alert-list"></div>
+</div>
+</section>
+
+
+<section id="analytics" class="section" style="padding-top:40px;">
+<div class="container">
+ <div class="section-label">&#128200; AI/ML Analytics</div>
+ <h2 class="section-title">🧠 Predictive Analytics Engine</h2>
+ <p class="section-subtitle">Machine learning models analyzing rainfall patterns, soil conditions, terrain data and historical records</p>
+ 
+  <div class="grid-2 fade-in" style="margin-bottom:24px;">
+
+    <!-- CHART 1: Risk Zone Trend Line Chart -->
+    <div class="card">
+      <h4 style="margin-bottom:4px;">📈 Risk Zone Trend (7 Days)</h4>
+      <p style="font-size:.78rem;color:#777;margin-bottom:12px;">Daily count of critical, high and medium zones over past week</p>
+      <div style="width:100%;overflow:hidden;">
+        <svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+          <!-- grid lines -->
+          <line x1="45" y1="10"  x2="455" y2="10"  stroke="#e8e8e8" stroke-width="1"/>
+          <line x1="45" y1="42"  x2="455" y2="42"  stroke="#e8e8e8" stroke-width="1"/>
+          <line x1="45" y1="74"  x2="455" y2="74"  stroke="#e8e8e8" stroke-width="1"/>
+          <line x1="45" y1="106" x2="455" y2="106" stroke="#e8e8e8" stroke-width="1"/>
+          <line x1="45" y1="138" x2="455" y2="138" stroke="#e8e8e8" stroke-width="1"/>
+          <!-- axes -->
+          <line x1="45" y1="10"  x2="45"  y2="143" stroke="#ccc" stroke-width="1.5"/>
+          <line x1="45" y1="143" x2="455" y2="143" stroke="#ccc" stroke-width="1.5"/>
+          <!-- Y labels -->
+          <text x="40" y="14"  text-anchor="end" font-size="9" fill="#888">20</text>
+          <text x="40" y="46"  text-anchor="end" font-size="9" fill="#888">15</text>
+          <text x="40" y="78"  text-anchor="end" font-size="9" fill="#888">10</text>
+          <text x="40" y="110" text-anchor="end" font-size="9" fill="#888">5</text>
+          <text x="40" y="142" text-anchor="end" font-size="9" fill="#888">0</text>
+          <!-- X labels -->
+          <text x="45"  y="157" text-anchor="middle" font-size="9" fill="#888">Aug 23</text>
+          <text x="111" y="157" text-anchor="middle" font-size="9" fill="#888">Aug 24</text>
+          <text x="177" y="157" text-anchor="middle" font-size="9" fill="#888">Aug 25</text>
+          <text x="243" y="157" text-anchor="middle" font-size="9" fill="#888">Aug 26</text>
+          <text x="309" y="157" text-anchor="middle" font-size="9" fill="#888">Aug 27</text>
+          <text x="375" y="157" text-anchor="middle" font-size="9" fill="#888">Aug 28</text>
+          <text x="455" y="157" text-anchor="middle" font-size="9" fill="#888">Today</text>
+          <!-- Critical line: [2,3,2,4,3,5,6] scale: 143-(val*6.5) -->
+          <polyline points="45,130 111,123.5 177,130 243,117 309,123.5 375,110.5 455,104"
+            fill="#c0392b18" stroke="#c0392b" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="45"  cy="130"   r="3.5" fill="#c0392b"/><circle cx="111" cy="123.5" r="3.5" fill="#c0392b"/>
+          <circle cx="177" cy="130"   r="3.5" fill="#c0392b"/><circle cx="243" cy="117"   r="3.5" fill="#c0392b"/>
+          <circle cx="309" cy="123.5" r="3.5" fill="#c0392b"/><circle cx="375" cy="110.5" r="3.5" fill="#c0392b"/>
+          <circle cx="455" cy="104"   r="3.5" fill="#c0392b"/>
+          <!-- High line: [5,6,7,6,8,9,8] -->
+          <polyline points="45,110.5 111,104 177,97.5 243,104 309,91 375,84.5 455,91"
+            fill="none" stroke="#f47920" stroke-width="2.5" stroke-dasharray="5,3" stroke-linejoin="round"/>
+          <circle cx="45"  cy="110.5" r="3.5" fill="#f47920"/><circle cx="111" cy="104"  r="3.5" fill="#f47920"/>
+          <circle cx="177" cy="97.5"  r="3.5" fill="#f47920"/><circle cx="243" cy="104"  r="3.5" fill="#f47920"/>
+          <circle cx="309" cy="91"    r="3.5" fill="#f47920"/><circle cx="375" cy="84.5" r="3.5" fill="#f47920"/>
+          <circle cx="455" cy="91"    r="3.5" fill="#f47920"/>
+          <!-- Medium line: [12,14,13,15,16,14,15] -->
+          <polyline points="45,65 111,52 177,58.5 243,45.5 309,39 375,52 455,45.5"
+            fill="none" stroke="#0057a8" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="45"  cy="65"   r="3.5" fill="#0057a8"/><circle cx="111" cy="52"   r="3.5" fill="#0057a8"/>
+          <circle cx="177" cy="58.5" r="3.5" fill="#0057a8"/><circle cx="243" cy="45.5" r="3.5" fill="#0057a8"/>
+          <circle cx="309" cy="39"   r="3.5" fill="#0057a8"/><circle cx="375" cy="52"   r="3.5" fill="#0057a8"/>
+          <circle cx="455" cy="45.5" r="3.5" fill="#0057a8"/>
+        </svg>
+        <!-- Legend BELOW chart -->
+        <div style="display:flex;gap:16px;justify-content:center;margin-top:8px;flex-wrap:wrap;">
+          <span style="display:flex;align-items:center;gap:5px;font-size:.76rem;color:#444;">
+            <span style="width:18px;height:3px;background:#c0392b;display:inline-block;border-radius:2px;"></span> Critical Zones
+          </span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:.76rem;color:#444;">
+            <span style="width:18px;height:3px;background:#f47920;display:inline-block;border-radius:2px;border-top:2px dashed #f47920;"></span> High Risk
+          </span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:.76rem;color:#444;">
+            <span style="width:18px;height:3px;background:#0057a8;display:inline-block;border-radius:2px;"></span> Medium Risk
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHART 2: District Rainfall Bar Chart -->
+    <div class="card">
+      <h4 style="margin-bottom:4px;">🌧️ District Rainfall vs Critical Threshold</h4>
+      <p style="font-size:.78rem;color:#777;margin-bottom:12px;">24-hr cumulative rainfall (mm). Red dashed = 100mm critical threshold</p>
+      <div style="width:100%;overflow:hidden;">
+        <svg viewBox="0 0 460 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+          <!-- grid -->
+          <line x1="55" y1="10"  x2="450" y2="10"  stroke="#e8e8e8" stroke-width="1"/>
+          <line x1="55" y1="43"  x2="450" y2="43"  stroke="#e8e8e8" stroke-width="1"/>
+          <line x1="55" y1="76"  x2="450" y2="76"  stroke="#e8e8e8" stroke-width="1"/>
+          <line x1="55" y1="109" x2="450" y2="109" stroke="#e8e8e8" stroke-width="1"/>
+          <line x1="55" y1="142" x2="450" y2="142" stroke="#e8e8e8" stroke-width="1"/>
+          <line x1="55" y1="10"  x2="55"  y2="142" stroke="#ccc" stroke-width="1.5"/>
+          <line x1="55" y1="142" x2="450" y2="142" stroke="#ccc" stroke-width="1.5"/>
+          <!-- Y labels: 0,50,100,150,200 scale: 142-(val*0.66) -->
+          <text x="50" y="145" text-anchor="end" font-size="9" fill="#888">0</text>
+          <text x="50" y="112" text-anchor="end" font-size="9" fill="#888">50</text>
+          <text x="50" y="79"  text-anchor="end" font-size="9" fill="#888">100</text>
+          <text x="50" y="46"  text-anchor="end" font-size="9" fill="#888">150</text>
+          <text x="50" y="13"  text-anchor="end" font-size="9" fill="#888">200</text>
+          <!-- Critical threshold at 100mm = y=76 -->
+          <line x1="55" y1="76" x2="450" y2="76" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <text x="452" y="73" font-size="8" fill="#c0392b">100mm</text>
+          <!-- Bars: districts, bar width=42, gap=10, start x=70 -->
+          <!-- Tawang:142mm red, Cherrapunji:187mm red, PapumPare:135mm red, Senapati:112mm red, Tamenglong:78mm green, Aizawl:56mm green, Gangtok:44mm green -->
+          <!-- y_top = 142 - val*0.66, height = val*0.66 -->
+          <rect x="68"  y="48.3"  width="40" height="93.7"  fill="#c0392bcc" rx="2"/>
+          <rect x="123" y="18.6"  width="40" height="123.4" fill="#c0392bcc" rx="2"/>
+          <rect x="178" y="53"    width="40" height="89"    fill="#c0392bcc" rx="2"/>
+          <rect x="233" y="68.1"  width="40" height="73.9"  fill="#e67e22cc" rx="2"/>
+          <rect x="288" y="90.5"  width="40" height="51.5"  fill="#1a7a3ecc" rx="2"/>
+          <rect x="343" y="105"   width="40" height="37"    fill="#1a7a3ecc" rx="2"/>
+          <rect x="398" y="113"   width="40" height="29"    fill="#1a7a3ecc" rx="2"/>
+          <!-- Value labels on bars -->
+          <text x="88"  y="44"   text-anchor="middle" font-size="9" fill="#c0392b" font-weight="700">142</text>
+          <text x="143" y="14"   text-anchor="middle" font-size="9" fill="#c0392b" font-weight="700">187</text>
+          <text x="198" y="48"   text-anchor="middle" font-size="9" fill="#c0392b" font-weight="700">135</text>
+          <text x="253" y="63"   text-anchor="middle" font-size="9" fill="#e67e22" font-weight="700">112</text>
+          <text x="308" y="86"   text-anchor="middle" font-size="9" fill="#1a7a3e" font-weight="700">78</text>
+          <text x="363" y="100"  text-anchor="middle" font-size="9" fill="#1a7a3e" font-weight="700">56</text>
+          <text x="418" y="108"  text-anchor="middle" font-size="9" fill="#1a7a3e" font-weight="700">44</text>
+          <!-- X labels -->
+          <text x="88"  y="156" text-anchor="middle" font-size="8.5" fill="#555">Tawang</text>
+          <text x="143" y="156" text-anchor="middle" font-size="8.5" fill="#555">Cherrap.</text>
+          <text x="198" y="156" text-anchor="middle" font-size="8.5" fill="#555">Papum P.</text>
+          <text x="253" y="156" text-anchor="middle" font-size="8.5" fill="#555">Senapati</text>
+          <text x="308" y="156" text-anchor="middle" font-size="8.5" fill="#555">Tameng.</text>
+          <text x="363" y="156" text-anchor="middle" font-size="8.5" fill="#555">Aizawl</text>
+          <text x="418" y="156" text-anchor="middle" font-size="8.5" fill="#555">Gangtok</text>
+        </svg>
+        <!-- Legend BELOW -->
+        <div style="display:flex;gap:16px;justify-content:center;margin-top:8px;flex-wrap:wrap;">
+          <span style="display:flex;align-items:center;gap:5px;font-size:.76rem;color:#444;">
+            <span style="width:12px;height:12px;background:#c0392b;display:inline-block;border-radius:2px;"></span> Above Threshold
+          </span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:.76rem;color:#444;">
+            <span style="width:12px;height:12px;background:#1a7a3e;display:inline-block;border-radius:2px;"></span> Below Threshold
+          </span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:.76rem;color:#444;">
+            <span style="width:18px;height:2px;background:#c0392b;display:inline-block;border-top:2px dashed #c0392b;"></span> 100mm Critical Line
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2 fade-in">
+
+    <!-- CHART 3: Radar / Spider Chart -->
+    <div class="card">
+      <h4 style="margin-bottom:4px;">🕸️ AI Multi-factor Risk Analysis</h4>
+      <p style="font-size:.78rem;color:#777;margin-bottom:12px;">Risk factor scores (0-100) across 6 parameters for top risk zones</p>
+      <div style="width:100%;overflow:hidden;">
+        <svg viewBox="0 0 320 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+          <!-- Radar center: 130,115  radius:90 -->
+          <!-- 6 axes at 0,60,120,180,240,300 degrees -->
+          <!-- Axis lines -->
+          <line x1="130" y1="115" x2="130" y2="25"  stroke="#e0e0e0" stroke-width="1"/>
+          <line x1="130" y1="115" x2="207.9" y2="70" stroke="#e0e0e0" stroke-width="1"/>
+          <line x1="130" y1="115" x2="207.9" y2="160" stroke="#e0e0e0" stroke-width="1"/>
+          <line x1="130" y1="115" x2="130" y2="205" stroke="#e0e0e0" stroke-width="1"/>
+          <line x1="130" y1="115" x2="52.1" y2="160" stroke="#e0e0e0" stroke-width="1"/>
+          <line x1="130" y1="115" x2="52.1" y2="70"  stroke="#e0e0e0" stroke-width="1"/>
+          <!-- Concentric rings at 30,60,90 (33%,67%,100%) -->
+          <polygon points="130,85 155.98,100 155.98,130 130,145 104.02,130 104.02,100" fill="none" stroke="#e8e8e8" stroke-width="1"/>
+          <polygon points="130,55 181.95,85 181.95,145 130,175 78.05,145 78.05,85"   fill="none" stroke="#e8e8e8" stroke-width="1"/>
+          <polygon points="130,25 207.9,70 207.9,160 130,205 52.1,160 52.1,70"      fill="none" stroke="#ddd" stroke-width="1"/>
+          <!-- Data: Tawang - Rainfall:90 SoilM:85 Slope:70 VegLoss:60 HistRisk:88 Seismic:40 -->
+          <!-- scale: center=115, r at val: 115 - (val/100)*90 -->
+          <!-- axis0(top):    x=130, y=115-(v*0.9) -->
+          <!-- axis1(TR):     x=130+(v*0.9*sin60), y=115-(v*0.9*cos60) = x=130+v*0.779, y=115-v*0.45 -->
+          <!-- axis2(BR):     x=130+v*0.779, y=115+v*0.45 -->
+          <!-- axis3(bottom): x=130, y=115+v*0.9 -->
+          <!-- axis4(BL):     x=130-v*0.779, y=115+v*0.45 -->
+          <!-- axis5(TL):     x=130-v*0.779, y=115-v*0.45 -->
+          <!-- Tawang: 90,85,70,60,88,40 -->
+          <polygon
+            points="130,34 196.2,76.8 196.2,146.5 130,169 69.0,154.5 99.9,76.8"
+            fill="#c0392b30" stroke="#c0392b" stroke-width="2" stroke-linejoin="round"/>
+          <!-- Cherrapunji: 95,78,55,80,72,30 -->
+          <polygon
+            points="130,29.5 190.1,79.9 182.1,152.2 130,187 76.3,138.7 106.7,79.9"
+            fill="#0057a820" stroke="#0057a8" stroke-width="2" stroke-linejoin="round" stroke-dasharray="5,3"/>
+          <!-- Axis Labels -->
+          <text x="130" y="19"   text-anchor="middle" font-size="9.5" fill="#555" font-weight="600">Rainfall</text>
+          <text x="216" y="68"   text-anchor="start"  font-size="9.5" fill="#555" font-weight="600">Soil Moist.</text>
+          <text x="216" y="168"  text-anchor="start"  font-size="9.5" fill="#555" font-weight="600">Slope Angle</text>
+          <text x="130" y="219"  text-anchor="middle" font-size="9.5" fill="#555" font-weight="600">Veg. Loss</text>
+          <text x="44"  y="168"  text-anchor="end"    font-size="9.5" fill="#555" font-weight="600">Hist. Risk</text>
+          <text x="44"  y="68"   text-anchor="end"    font-size="9.5" fill="#555" font-weight="600">Seismic</text>
+          <!-- Scale rings label -->
+          <text x="133" y="113" font-size="7.5" fill="#aaa">33%</text>
+          <text x="133" y="83"  font-size="7.5" fill="#aaa">67%</text>
+          <text x="133" y="53"  font-size="7.5" fill="#aaa">100%</text>
+        </svg>
+        <!-- Legend BELOW -->
+        <div style="display:flex;gap:20px;justify-content:center;margin-top:6px;flex-wrap:wrap;">
+          <span style="display:flex;align-items:center;gap:5px;font-size:.76rem;color:#444;">
+            <span style="width:18px;height:3px;background:#c0392b;display:inline-block;border-radius:2px;"></span> Tawang District
+          </span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:.76rem;color:#444;">
+            <span style="width:18px;height:3px;background:#0057a8;display:inline-block;border-radius:2px;border-top:2px dashed #0057a8;"></span> Cherrapunji
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHART 4: Donut Chart - Zone Risk Distribution -->
+    <div class="card">
+      <h4 style="margin-bottom:4px;">🍩 Zone Risk Distribution</h4>
+      <p style="font-size:.78rem;color:#777;margin-bottom:12px;">Current risk classification across all 162 monitored zones in NER</p>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <!-- Donut SVG -->
+        <div style="flex:0 0 160px;">
+          <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+            <!-- Donut arcs (cx=80,cy=80, R=68, r=40) -->
+            <!-- Critical 6/162=3.7% => 13.3deg, High 14/162=8.6% => 31deg, Medium 28/162=17.3% => 62.3deg, Low 38/162=23.5% => 84.4deg, Safe 76/162=46.9% => 169deg -->
+            <!-- Arc path: M start_x start_y A R R 0 large-arc sweep end_x end_y L inner_end_x inner_end_y A r r 0 large-arc 0 inner_start_x inner_start_y Z -->
+            <!-- Critical: 0-13.3deg (top=270deg) -->
+            <path d="M80,12 A68,68,0,0,1,93.5,13.4 L88.3,41.9 A40,40,0,0,0,80,40Z" fill="#c0392b"/>
+            <!-- High: 13.3-44.3deg -->
+            <path d="M93.5,13.4 A68,68,0,0,1,126.8,53.6 L106.2,73.6 A40,40,0,0,0,88.3,41.9Z" fill="#f47920"/>
+            <!-- Medium: 44.3-106.6deg -->
+            <path d="M126.8,53.6 A68,68,0,0,1,108.3,143.8 L77.1,118.7 A40,40,0,0,0,106.2,73.6Z" fill="#f1c40f"/>
+            <!-- Low: 106.6-191deg -->
+            <path d="M108.3,143.8 A68,68,0,0,1,14.2,110.7 L38.9,94.5 A40,40,0,0,0,77.1,118.7Z" fill="#1a7a3e"/>
+            <!-- Safe: 191-360deg -->
+            <path d="M14.2,110.7 A68,68,0,1,1,80,12 L80,40 A40,40,0,1,0,38.9,94.5Z" fill="#145e30"/>
+            <!-- Center text -->
+            <text x="80" y="76" text-anchor="middle" font-size="22" font-weight="800" fill="#003366">162</text>
+            <text x="80" y="93" text-anchor="middle" font-size="9"  fill="#777">Total Zones</text>
+          </svg>
+        </div>
+        <!-- Legend on right -->
+        <div style="flex:1;min-width:120px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f0f0;">
+            <span style="display:flex;align-items:center;gap:7px;font-size:.82rem;color:#333;">
+              <span style="width:11px;height:11px;background:#c0392b;border-radius:2px;flex-shrink:0;display:inline-block;"></span>Critical
+            </span>
+            <span style="font-size:.82rem;font-weight:700;color:#003366;">6</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f0f0;">
+            <span style="display:flex;align-items:center;gap:7px;font-size:.82rem;color:#333;">
+              <span style="width:11px;height:11px;background:#f47920;border-radius:2px;flex-shrink:0;display:inline-block;"></span>High
+            </span>
+            <span style="font-size:.82rem;font-weight:700;color:#003366;">14</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f0f0;">
+            <span style="display:flex;align-items:center;gap:7px;font-size:.82rem;color:#333;">
+              <span style="width:11px;height:11px;background:#f1c40f;border-radius:2px;flex-shrink:0;display:inline-block;"></span>Medium
+            </span>
+            <span style="font-size:.82rem;font-weight:700;color:#003366;">28</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f0f0;">
+            <span style="display:flex;align-items:center;gap:7px;font-size:.82rem;color:#333;">
+              <span style="width:11px;height:11px;background:#1a7a3e;border-radius:2px;flex-shrink:0;display:inline-block;"></span>Low
+            </span>
+            <span style="font-size:.82rem;font-weight:700;color:#003366;">38</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;">
+            <span style="display:flex;align-items:center;gap:7px;font-size:.82rem;color:#333;">
+              <span style="width:11px;height:11px;background:#145e30;border-radius:2px;flex-shrink:0;display:inline-block;"></span>Safe
+            </span>
+            <span style="font-size:.82rem;font-weight:700;color:#003366;">76</span>
+          </div>
+          <div style="margin-top:10px;padding:8px;background:#f0f4fb;border-radius:4px;font-size:.75rem;color:#003366;text-align:center;font-weight:600;">
+            Last updated: 15 min ago
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+ <div class="card"><h4 style="margin-bottom:16px;">🍩 Zone Risk Distribution</h4><div class="chart-card" style="height:auto;"><div style="width:100%;height:260px;padding:4px 0;">
+<svg viewBox="0 0 310 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+  <path d="M110.0 27.0 A88 88 0 0 1 130.3 29.4 L121.1 68.3 A48 48 0 0 0 110.0 67.0Z" fill="#c0392b"/><path d="M130.3 29.4 A88 88 0 0 1 171.6 52.2 L143.6 80.7 A48 48 0 0 0 121.1 68.3Z" fill="#f47920"/><path d="M171.6 52.2 A88 88 0 0 1 194.3 140.2 L156.0 128.8 A48 48 0 0 0 143.6 80.7Z" fill="#d4ac0d"/><path d="M194.3 140.2 A88 88 0 0 1 93.0 201.4 L100.7 162.1 A48 48 0 0 0 156.0 128.8Z" fill="#1a7a3e"/><path d="M93.0 201.4 A88 88 0 0 1 110.0 27.0 L110.0 67.0 A48 48 0 0 0 100.7 162.1Z" fill="#145e30"/>
+  <text x="110" y="109" text-anchor="middle" font-size="24" font-weight="800" fill="#003366">162</text>
+  <text x="110" y="128" text-anchor="middle" font-size="10" fill="#777">Total Zones</text>
+  <!-- Separator -->
+  <line x1="200" y1="40" x2="200" y2="210" stroke="#e0e0e0" stroke-width="1"/>
+  <rect x="215" y="60" width="13" height="13" fill="#c0392b" rx="2"/>
+  <text x="233" y="71" font-size="11" fill="#222">Critical</text>
+  <text x="298" y="71" font-size="11" fill="#003366" font-weight="bold" text-anchor="end">6 zones</text>
+  <rect x="215" y="92" width="13" height="13" fill="#f47920" rx="2"/>
+  <text x="233" y="103" font-size="11" fill="#222">High</text>
+  <text x="298" y="103" font-size="11" fill="#003366" font-weight="bold" text-anchor="end">14 zones</text>
+  <rect x="215" y="124" width="13" height="13" fill="#d4ac0d" rx="2"/>
+  <text x="233" y="135" font-size="11" fill="#222">Medium</text>
+  <text x="298" y="135" font-size="11" fill="#003366" font-weight="bold" text-anchor="end">28 zones</text>
+  <rect x="215" y="156" width="13" height="13" fill="#1a7a3e" rx="2"/>
+  <text x="233" y="167" font-size="11" fill="#222">Low</text>
+  <text x="298" y="167" font-size="11" fill="#003366" font-weight="bold" text-anchor="end">38 zones</text>
+  <rect x="215" y="188" width="13" height="13" fill="#145e30" rx="2"/>
+  <text x="233" y="199" font-size="11" fill="#222">Safe</text>
+  <text x="298" y="199" font-size="11" fill="#003366" font-weight="bold" text-anchor="end">76 zones</text>
+  
+</svg></div></div></div>
+ </div>
+ <div class="card fade-in" style="margin-top:24px;">
+ <div class="flex-between" style="margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+ <h4>&#129302; AI/ML Model Pipeline</h4>
+ <span class="badge badge-success">Models Live</span>
+ </div>
+ <div class="grid-3">
+ <div style="padding:16px;background:var(--bg-dark);border:1px solid var(--border);border-radius:var(--radius-sm);">
+ <div style="font-size:1.5rem;margin-bottom:8px;">&#127810;</div>
+ <div style="font-weight:700;margin-bottom:4px;">Random Forest</div>
+ <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;">Terrain + Soil Classification</div>
+ <div style="display:flex;justify-content:space-between;font-size:.8rem;"><span>Accuracy</span><span style="color:#4ade80;font-weight:700;">91.2%</span></div>
+ <div class="risk-meter-bar" style="margin-top:4px;"><div style="width:91%;height:100%;border-radius:3px;background:#27ae60;"></div></div>
+ </div>
+ <div style="padding:16px;background:var(--bg-dark);border:1px solid var(--border);border-radius:var(--radius-sm);">
+ <div style="font-size:1.5rem;margin-bottom:8px;">&#129504;</div>
+ <div style="font-weight:700;margin-bottom:4px;">LSTM Neural Net</div>
+ <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;">Rainfall Time-Series Forecasting</div>
+ <div style="display:flex;justify-content:space-between;font-size:.8rem;"><span>Accuracy</span><span style="color:#60a5fa;font-weight:700;">93.7%</span></div>
+ <div class="risk-meter-bar" style="margin-top:4px;"><div style="width:93%;height:100%;border-radius:3px;background:#3498db;"></div></div>
+ </div>
+ <div style="padding:16px;background:var(--bg-dark);border:1px solid var(--border);border-radius:var(--radius-sm);">
+ <div style="font-size:1.5rem;margin-bottom:8px;">&#9889;</div>
+ <div style="font-weight:700;margin-bottom:4px;">XGBoost Ensemble</div>
+ <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px;">Multi-variable Risk Scoring</div>
+ <div style="display:flex;justify-content:space-between;font-size:.8rem;"><span>Accuracy</span><span style="color:#a78bfa;font-weight:700;">94.1%</span></div>
+ <div class="risk-meter-bar" style="margin-top:4px;"><div style="width:94%;height:100%;border-radius:3px;background:#9b59b6;"></div></div>
+ </div>
+ </div>
+ <div style="margin-top:20px;padding:16px;background:rgba(37,99,168,.08);border:1px solid rgba(37,99,168,.2);border-radius:var(--radius-sm);">
+ <div style="font-size:.85rem;font-weight:700;margin-bottom:8px;color:#60a5fa;">Data Sources Integrated:</div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;">
+ <span class="chip">Sentinel-2 Imagery</span>
+ <span class="chip">IMD Weather API</span>
+ <span class="chip">IoT Sensor Network</span>
+ <span class="chip">SRTM DEM Terrain</span>
+ <span class="chip">Historical Records 1980-2025</span>
+ <span class="chip">NDVI Vegetation Index</span>
+ <span class="chip">MODIS Soil Moisture</span>
+ <span class="chip">Seismic Data NGRI</span>
+ </div>
+ </div>
+ </div>
+</div>
+</section>
+
+
+<section id="weather" class="section" style="padding-top:40px;">
+<div class="container">
+ <div class="section-label">&#127783; Weather Intelligence</div>
+ <h2 class="section-title">🌤️ IMD Weather Integration</h2>
+ <p class="section-subtitle">Real-time weather data and 7-day rainfall forecast with landslide risk correlation</p>
+ <div class="grid-3 fade-in">
+ <div class="card" style="grid-column:span 1;">
+ <div style="text-align:center;margin-bottom:16px;">
+ <span style="font-size:3rem;display:block;margin-bottom:12px;">&#9928;</span>
+ <div style="font-size:2.5rem;font-weight:800;">24&deg;C</div>
+ <div style="color:var(--text-muted);font-size:.9rem;margin-top:4px;">Heavy Thunderstorm &mdash; Tawang, AP</div>
+ <div style="margin-top:8px;"><span class="badge badge-danger">RED ALERT</span></div>
+ </div>
+ <div class="weather-grid">
+ <div class="weather-stat"><div class="key">Rainfall</div><div class="val text-info" id="current-rainfall">-- mm/hr</div></div>
+ <div class="weather-stat"><div class="key">Humidity</div><div class="val text-info" id="current-humidity">-- %</div></div>
+ <div class="weather-stat"><div class="key">Wind Speed</div><div class="val">47 km/h</div></div>
+ <div class="weather-stat"><div class="key">Visibility</div><div class="val">0.8 km</div></div>
+ <div class="weather-stat"><div class="key">Pressure</div><div class="val">982 hPa</div></div>
+ <div class="weather-stat"><div class="key">Cloud Cover</div><div class="val">98%</div></div>
+ </div>
+ <div style="margin-top:16px;padding:10px;background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);border-radius:var(--radius-sm);font-size:.8rem;color:#e74c3c;">
+ IMD Red Alert: Extremely heavy rainfall forecast for AP and Meghalaya next 24 hours.
+ </div>
+ </div>
+ <div class="card" style="grid-column:span 2;">
+ <div class="flex-between" style="margin-bottom:16px;">
+ <h4>📅 7-Day Rainfall &amp; Risk Forecast</h4>
+ <span class="badge badge-info">IMD Data</span>
+ </div>
+ <div id="forecast-list"></div>
+ <div style="margin-top:16px;padding:12px;background:rgba(22,160,133,.08);border:1px solid rgba(22,160,133,.2);border-radius:var(--radius-sm);">
+ <div style="font-size:.82rem;font-weight:700;color:#2dd4bf;margin-bottom:6px;">AI Risk Forecast Insight:</div>
+ <div style="font-size:.82rem;color:var(--text-muted);">Cumulative rainfall over next 72 hours likely to exceed soil saturation thresholds in Tawang, Cherrapunji, and Tamenglong. AI model recommends pre-emptive evacuation of low-lying villages within 500m of slopes.</div>
+ </div>
+ </div>
+ </div>
+ <div class="card fade-in" style="margin-top:24px;">
+ <h4 style="margin-bottom:16px;">📡 Weather Station Network</h4>
+ <div class="table-wrap">
+ <table class="data-table">
+ <thead><tr><th>Station</th><th>District</th><th>Temp</th><th>Rainfall mm/hr</th><th>Humidity</th><th>Wind</th><th>Alert Level</th></tr></thead>
+ <tbody>
+ <tr><td>Tawang AWS</td><td>Tawang, AP</td><td>18&deg;C</td><td style="color:#e74c3c;font-weight:700;">142</td><td>96%</td><td>47 km/h</td><td><span class="badge badge-danger">RED</span></td></tr>
+ <tr><td>Cherrapunji AWS</td><td>E. Khasi, ML</td><td>22&deg;C</td><td style="color:#e74c3c;font-weight:700;">187</td><td>99%</td><td>38 km/h</td><td><span class="badge badge-danger">RED</span></td></tr>
+ <tr><td>Naharlagun AWS</td><td>Papum Pare, AP</td><td>25&deg;C</td><td style="color:#f39c12;font-weight:700;">135</td><td>94%</td><td>32 km/h</td><td><span class="badge badge-danger">RED</span></td></tr>
+ <tr><td>Senapati AWS</td><td>Senapati, MN</td><td>23&deg;C</td><td style="color:#f39c12;font-weight:700;">112</td><td>91%</td><td>28 km/h</td><td><span class="badge badge-warning">ORANGE</span></td></tr>
+ <tr><td>Haflong AWS</td><td>Dima Hasao, AS</td><td>26&deg;C</td><td style="color:#f39c12;font-weight:700;">89</td><td>87%</td><td>22 km/h</td><td><span class="badge badge-warning">ORANGE</span></td></tr>
+ <tr><td>Kohima AWS</td><td>Kohima, NL</td><td>21&deg;C</td><td>68</td><td>82%</td><td>18 km/h</td><td><span class="badge badge-info">YELLOW</span></td></tr>
+ </tbody>
+ </table>
+ </div>
+ </div>
+</div>
+</section>
+
+
+<section id="sensors" class="section" style="padding-top:40px;background:rgba(22,160,133,.03);">
+<div class="container">
+ <div class="section-label">&#128225; IoT Sensor Network</div>
+ <h2 class="section-title">📡 Real-Time Sensor Dashboard</h2>
+ <p class="section-subtitle">Live data from soil moisture sensors, inclinometers, piezometers, and rain gauges across NER</p>
+ <div class="grid-3 fade-in" id="sensor-grid"></div>
+ <div class="card fade-in" style="margin-top:24px;">
+ <div class="flex-between" style="margin-bottom:16px;flex-wrap:wrap;gap:12px;">
+ <h4>⚙️ Sensor Network Overview</h4>
+ <div style="display:flex;gap:10px;"><span class="badge badge-success">43 Online</span><span class="badge badge-warning">4 Warning</span><span class="badge badge-danger">1 Offline</span></div>
+ </div>
+ <div class="grid-4">
+ <div style="text-align:center;padding:16px;background:var(--bg-dark);border-radius:var(--radius-sm);border:1px solid var(--border);"><div style="font-size:2rem;margin-bottom:6px;">&#128167;</div><div style="font-weight:700;font-size:1.2rem;color:#3498db;">32</div><div style="font-size:.78rem;color:var(--text-muted);">Soil Moisture Sensors</div></div>
+ <div style="text-align:center;padding:16px;background:var(--bg-dark);border-radius:var(--radius-sm);border:1px solid var(--border);"><div style="font-size:2rem;margin-bottom:6px;">&#128208;</div><div style="font-weight:700;font-size:1.2rem;color:#f39c12;">18</div><div style="font-size:.78rem;color:var(--text-muted);">Inclinometers</div></div>
+ <div style="text-align:center;padding:16px;background:var(--bg-dark);border-radius:var(--radius-sm);border:1px solid var(--border);"><div style="font-size:2rem;margin-bottom:6px;">&#127783;</div><div style="font-weight:700;font-size:1.2rem;color:#9b59b6;">24</div><div style="font-size:.78rem;color:var(--text-muted);">Rain Gauges</div></div>
+ <div style="text-align:center;padding:16px;background:var(--bg-dark);border-radius:var(--radius-sm);border:1px solid var(--border);"><div style="font-size:2rem;margin-bottom:6px;">&#128207;</div><div style="font-weight:700;font-size:1.2rem;color:#2dd4bf;">12</div><div style="font-size:.78rem;color:var(--text-muted);">Piezometers</div></div>
+ </div>
+ </div>
+</div>
+</section>
+
+
+<section id="field-report" class="section" style="padding-top:40px;background:rgba(37,99,168,.03);">
+<div class="container">
+ <div class="section-label">&#128203; Field Reporting</div>
+ <h2 class="section-title">📍 Geo-Tagged Field Report</h2>
+ <p class="section-subtitle">Citizens and field officials can upload geo-tagged photos/videos of cracks, slope movement, or blocked roads</p>
+ <div class="grid-2 fade-in" style="align-items:start;">
+ <div class="report-form">
+ <form id="field-report-form" onsubmit="return handleFRSubmit(event)">
+ <div class="form-row">
+ <div class="form-group"><label class="form-label">Reporter Name <span>*</span></label><input type="text" class="form-control" placeholder="Your full name" required/></div>
+ <div class="form-group"><label class="form-label">Contact Number <span>*</span></label><input type="tel" class="form-control" placeholder="+91 XXXXX XXXXX" required/></div>
+ </div>
+ <div class="form-row">
+ <div class="form-group">
+ <label class="form-label">State <span>*</span></label>
+ <select class="form-control form-select" required>
+ <option value="">Select State</option>
+ <option>Arunachal Pradesh</option><option>Assam</option><option>Manipur</option>
+ <option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option>
+ <option>Sikkim</option><option>Tripura</option>
+ </select>
+ </div>
+ <div class="form-group"><label class="form-label">District <span>*</span></label><input type="text" class="form-control" placeholder="Enter district name" required/></div>
+ </div>
+ <div class="form-group">
+ <label class="form-label">Incident Type <span>*</span></label>
+ <select class="form-control form-select" required>
+ <option value="">Select incident type</option>
+ <option>Active Landslide</option><option>Ground Cracks</option><option>Slope Movement</option>
+ <option>Blocked Road</option><option>Debris Flow</option><option>Flood + Landslide</option>
+ <option>Soil Erosion</option><option>Building Damage</option><option>Other</option>
+ </select>
+ </div>
+ <div class="form-group">
+ <label class="form-label">Severity Level <span>*</span></label>
+ <select class="form-control form-select" required>
+ <option value="">Select severity</option>
+ <option>Critical - Immediate Danger</option><option>High - Urgent Action Needed</option>
+ <option>Medium - Monitoring Required</option><option>Low - Precautionary</option>
+ </select>
+ </div>
+ <div class="form-group">
+ <label class="form-label">Description <span>*</span></label>
+ <textarea class="form-control" placeholder="Describe what you observed - size of cracks, distance of landslide, estimated area affected, number of people at risk..." required></textarea>
+ </div>
+ <div class="form-group">
+ <label class="form-label">GPS Coordinates</label>
+ <div style="display:flex;gap:10px;margin-bottom:10px;">
+ <input type="text" id="lat-input" class="form-control" placeholder="Latitude" style="flex:1"/>
+ <input type="text" id="lng-input" class="form-control" placeholder="Longitude" style="flex:1"/>
+ <button type="button" class="btn btn-success" id="get-location-btn">&#128205; Get GPS</button>
+ </div>
+ <div class="geo-info" id="geo-display" style="display:none;">
+ <span>&#128205;</span><span>Location: <strong class="geo-coords"></strong></span>
+ </div>
+ </div>
+ <div class="form-group">
+ <label class="form-label">Upload Photos/Videos</label>
+ <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" style="cursor:pointer;">
+ <div class="upload-icon" style="font-size:2rem;margin-bottom:8px;">&#128247;</div>
+ <p>Drag and drop photos/videos or click to browse</p>
+ <p style="font-size:.8rem;color:var(--text-muted);">Supports: JPG, PNG, MP4, MOV - Max 50MB per file</p>
+ </div>
+ <input type="file" id="file-input" style="display:none;" multiple accept="image/*,video/*" onchange="handleFileSelect(this.files)"/>
+ </div>
+ <div style="margin-bottom:20px;">
+ <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+ <input type="checkbox" required style="width:18px;height:18px;accent-color:var(--primary-light)"/>
+ <span style="font-size:.88rem;color:var(--text-secondary);">I confirm this is an accurate field observation. False reports may attract legal action under NDMA guidelines.</span>
+ </label>
+ </div>
+ <button type="submit" class="btn btn-danger btn-lg" style="width:100%;">&#128228; Submit Field Report</button>
+ </form>
+ </div>
+ <div>
+ <div class="card" style="margin-bottom:16px;">
+ <h4 style="margin-bottom:16px;">📜 Reporting Guidelines</h4>
+ <div style="display:flex;flex-direction:column;gap:12px;">
+ <div style="display:flex;gap:12px;"><span style="font-size:1.2rem;flex-shrink:0;">1</span><div><strong>Ensure your safety first</strong><br/><span style="font-size:.82rem;color:var(--text-muted);">Do not approach unstable slopes or active landslides</span></div></div>
+ <div style="display:flex;gap:12px;"><span style="font-size:1.2rem;flex-shrink:0;">2</span><div><strong>Enable GPS location</strong><br/><span style="font-size:.82rem;color:var(--text-muted);">Accurate coordinates help emergency response teams</span></div></div>
+ <div style="display:flex;gap:12px;"><span style="font-size:1.2rem;flex-shrink:0;">3</span><div><strong>Upload clear visuals</strong><br/><span style="font-size:.82rem;color:var(--text-muted);">Photos/videos of cracks, movement, blocked roads</span></div></div>
+ <div style="display:flex;gap:12px;"><span style="font-size:1.2rem;flex-shrink:0;">4</span><div><strong>Works offline too</strong><br/><span style="font-size:.82rem;color:var(--text-muted);">Data cached locally and synced when connected</span></div></div>
+ <div style="display:flex;gap:12px;"><span style="font-size:1.2rem;flex-shrink:0;">5</span><div><strong>Reviewed by AI + Officials</strong><br/><span style="font-size:.82rem;color:var(--text-muted);">Reports trigger automated alerts within 2 minutes</span></div></div>
+ </div>
+ <div style="margin-top:16px;padding:12px;background:rgba(39,174,96,.08);border:1px solid rgba(39,174,96,.2);border-radius:var(--radius-sm);font-size:.82rem;color:#27ae60;">
+ SMS: Send REPORT to 14567 | Available in 8 NE languages
+ </div>
+ </div>
+ <div class="card">
+ <h4 style="margin-bottom:16px;">📂 Recent Field Reports</h4>
+ <div style="display:flex;flex-direction:column;gap:12px;">
+ <div style="padding:12px;background:var(--bg-dark);border-radius:var(--radius-sm);border-left:3px solid #e74c3c;">
+ <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><strong style="font-size:.88rem;">Active Landslide - NH-13</strong><span class="badge badge-danger" style="font-size:.68rem;">CRITICAL</span></div>
+ <div style="font-size:.78rem;color:var(--text-muted);">Tawang, AP - 18 mins ago - Range Forest Officer</div>
+ <div style="font-size:.82rem;margin-top:4px;">Large debris slide ~200m wide blocking NH-13. 50+ vehicles stranded.</div>
+ </div>
+ <div style="padding:12px;background:var(--bg-dark);border-radius:var(--radius-sm);border-left:3px solid #f39c12;">
+ <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><strong style="font-size:.88rem;">Ground Cracks Observed</strong><span class="badge badge-warning" style="font-size:.68rem;">HIGH</span></div>
+ <div style="font-size:.78rem;color:var(--text-muted);">Ribhoi, Meghalaya - 1.2 hrs ago - Village Head</div>
+ <div style="font-size:.82rem;margin-top:4px;">Multiple 5-8cm cracks in hillside. Trees tilting. 40 households at risk.</div>
+ </div>
+ <div style="padding:12px;background:var(--bg-dark);border-radius:var(--radius-sm);border-left:3px solid #3498db;">
+ <div style="display:flex;justify-content:space-between;margin-bottom:4px;"><strong style="font-size:.88rem;">Road Erosion Reported</strong><span class="badge badge-info" style="font-size:.68rem;">MEDIUM</span></div>
+ <div style="font-size:.78rem;color:var(--text-muted);">Haflong, Assam - 3 hrs ago - NHAI Engineer</div>
+ <div style="font-size:.82rem;margin-top:4px;">Side slope erosion 15m section on NH-37 km 82. Immediate repair needed.</div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+</div>
+</section>
+
+
+<section id="response" class="section" style="padding-top:40px;">
+<div class="container">
+ <div class="section-label">&#128641; Emergency Response</div>
+ <h2 class="section-title">🤝 Response Coordination</h2>
+ <p class="section-subtitle">Automated emergency response prioritisation and coordination with NDRF, SDRF, and district authorities</p>
+ <div class="grid-2 fade-in">
+ <div class="card">
+ <h4 style="margin-bottom:20px;">⏳ Active Response Timeline - Tawang Incident</h4>
+ <div class="response-timeline">
+ <div class="timeline-item done"><div class="timeline-time">19:12 IST - Today</div><div class="timeline-title">AI Alert Generated</div><div class="timeline-desc">System detected 89% probability. Automated alert triggered.</div></div>
+ <div class="timeline-item done"><div class="timeline-time">19:14 IST</div><div class="timeline-title">SMS Alerts Dispatched</div><div class="timeline-desc">3,200+ residents notified via SMS, app push, and IVR calls.</div></div>
+ <div class="timeline-item done"><div class="timeline-time">19:17 IST</div><div class="timeline-title">District Administration Notified</div><div class="timeline-desc">DC Tawang and DDMA received official alert. EOC activated.</div></div>
+ <div class="timeline-item done"><div class="timeline-time">19:25 IST</div><div class="timeline-title">NDRF Team Mobilised</div><div class="timeline-desc">Team 7 (Guwahati) - 45 personnel en route to Tawang.</div></div>
+ <div class="timeline-item active"><div class="timeline-time">19:40 IST - IN PROGRESS</div><div class="timeline-title">Helicopter Survey Underway</div><div class="timeline-desc">IAF Mi-17 helicopter conducting aerial assessment of affected zones.</div></div>
+ <div class="timeline-item pending"><div class="timeline-time">ETA: 20:30 IST</div><div class="timeline-title">Evacuation to Begin</div><div class="timeline-desc">12 villages within 500m of critical slopes to be evacuated.</div></div>
+ <div class="timeline-item pending"><div class="timeline-time">ETA: 21:00 IST</div><div class="timeline-title">Medical Teams Deploy</div><div class="timeline-desc">3 medical teams with emergency supplies heading to relief camps.</div></div>
+ </div>
+ </div>
+ <div>
+ <div class="card" style="margin-bottom:16px;">
+ <h4 style="margin-bottom:16px;">📞 Emergency Contacts</h4>
+ <div class="contact-card"><div class="contact-avatar" style="background:rgba(231,76,60,.15);"></div><div class="contact-info"><div class="name">NDRF Control Room</div><div class="role">National Disaster Response Force - 24/7</div></div><div class="contact-actions"><a href="tel:9711077372" class="btn btn-success btn-sm">&#128222; Call</a></div></div>
+ <div class="contact-card"><div class="contact-avatar" style="background:rgba(243,156,18,.15);">&#127963;</div><div class="contact-info"><div class="name">SDMA NER Helpline</div><div class="role">State Disaster Management Authority</div></div><div class="contact-actions"><a href="tel:1070" class="btn btn-success btn-sm">&#128222; 1070</a></div></div>
+ <div class="contact-card"><div class="contact-avatar" style="background:rgba(39,174,96,.15);">&#128682;</div><div class="contact-info"><div class="name">National Emergency</div><div class="role">Police - Fire - Ambulance - Disaster</div></div><div class="contact-actions"><a href="tel:112" class="btn btn-danger btn-sm">&#128222; 112</a></div></div>
+ <div class="contact-card"><div class="contact-avatar" style="background:rgba(37,99,168,.15);"></div><div class="contact-info"><div class="name">IMD Flood Warning Centre</div><div class="role">Guwahati Meteorological Centre</div></div><div class="contact-actions"><a href="tel:03612731030" class="btn btn-outline btn-sm">&#128222; Call</a></div></div>
+ </div>
+ <div class="card">
+ <h4 style="margin-bottom:16px;">⚠️ Emergency Prioritisation Matrix</h4>
+ <div style="display:flex;flex-direction:column;gap:10px;">
+ <div style="padding:12px;background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);border-radius:var(--radius-sm);"><div style="display:flex;justify-content:space-between;margin-bottom:6px;"><strong style="color:#e74c3c;">P1 - CRITICAL</strong><span class="badge badge-danger">6 Zones</span></div><div style="font-size:.82rem;color:var(--text-muted);">Immediate evacuation. NDRF + helicopters. Road closures enforced.</div></div>
+ <div style="padding:12px;background:rgba(243,156,18,.08);border:1px solid rgba(243,156,18,.2);border-radius:var(--radius-sm);"><div style="display:flex;justify-content:space-between;margin-bottom:6px;"><strong style="color:#f39c12;">P2 - HIGH</strong><span class="badge badge-warning">14 Zones</span></div><div style="font-size:.82rem;color:var(--text-muted);">Prepositioning of SDRF teams. Community alerts. Route diversions.</div></div>
+ <div style="padding:12px;background:rgba(37,99,168,.08);border:1px solid rgba(37,99,168,.2);border-radius:var(--radius-sm);"><div style="display:flex;justify-content:space-between;margin-bottom:6px;"><strong style="color:#60a5fa;">P3 - WATCH</strong><span class="badge badge-info">28 Zones</span></div><div style="font-size:.82rem;color:var(--text-muted);">Enhanced monitoring. Local teams on standby. Community awareness.</div></div>
+ </div>
+ <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+ <button class="btn btn-danger" style="flex:1;" onclick="showToast('danger','BROADCAST','Emergency broadcast sent to all 8 NER states.',8000)">Mass Alert All States</button>
+ <button class="btn btn-outline" style="flex:1;" onclick="showToast('info','Report','Generating situation report for NDMA...',3000)">Generate SitRep</button>
+ </div>
+ </div>
+ </div>
+ </div>
+</div>
+</section>
+
+
+<footer>
+<div class="container">
+ <div class="footer-grid">
+ <div class="footer-brand">
+ <div class="nav-logo" style="margin-bottom:12px;">
+ <img class="nav-logo-icon" src="assets/img/early-shield-logo.svg?v=5" alt="Early Shield"/>
+ <div class="nav-logo-text"><strong style="font-size:1.1rem;">Early Shield</strong><span>AI Early Warning System</span></div>
+ </div>
+ <p>AI-powered landslide early warning and monitoring platform for the North Eastern Region of India. 🛡️ Supporting disaster resilience across North East India.</p>
+ <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+ <span class="partner-logo">NDMA</span><span class="partner-logo">IMD</span><span class="partner-logo">ISRO</span><span class="partner-logo">GSI</span><span class="partner-logo">NIC</span>
+ </div>
+ </div>
+ <div class="footer-col">
+ <h5>Platform</h5>
+ <ul>
+ <li><a href="#dashboard">Dashboard</a></li>
+ <li><a href="#map-section">GIS Map</a></li>
+ <li><a href="#alerts">Alerts</a></li>
+ <li><a href="#analytics">Analytics</a></li>
+ <li><a href="#field-report">Field Report</a></li>
+ </ul>
+ </div>
+ <div class="footer-col">
+ <h5>Resources</h5>
+ <ul>
+ <li><a href="#">User Manual</a></li>
+ <li><a href="#">API Documentation</a></li>
+ <li><a href="#">Sensor Network</a></li>
+ <li><a href="#">Satellite Feed</a></li>
+ <li><a href="#">Historical Data</a></li>
+ </ul>
+ </div>
+ <div class="footer-col">
+ <h5>Emergency</h5>
+ <ul>
+ <li><a href="tel:112">112 - National Emergency</a></li>
+ <li><a href="tel:1070">1070 - SDMA Helpline</a></li>
+ <li><a href="tel:9711077372">NDRF Control Room</a></li>
+ <li><a href="#">Download App</a></li>
+ <li><a href="#">Contact Support</a></li>
+ </ul>
+ </div>
+ </div>
+ <div class="footer-bottom">
+ <p>Early Shield | Built for disaster resilience</p>
+ <p>Data: IMD - ISRO Bhuvan - GSI - NDMA - Sentinel-2 - OpenStreetMap</p>
+ </div>
+</div>
+</footer>
+
+
+<div class="modal-overlay" id="lang-modal" onclick="if(event.target===this){this.style.display='none';this.classList.remove('active')}">
+<div class="modal">
+ <div class="flex-between" style="margin-bottom:20px;">
+ <h3 style="margin:0;">🌐 Select Language</h3>
+ <button onclick="var m=document.getElementById('lang-modal');m.classList.remove('active');setTimeout(function(){m.style.display='none'},300)" style="background:none;border:none;color:#777;font-size:1.4rem;cursor:pointer;line-height:1;padding:4px;">&times;</button>
+ </div>
+ <div class="lang-grid">
+ <button class="lang-btn selected" data-lang="en"><span class="native">English</span><small>English</small></button>
+ <button class="lang-btn" data-lang="hi"><span class="native">&#2361;&#2367;&#2306;&#2342;&#2368;</span><small>Hindi</small></button>
+ <button class="lang-btn" data-lang="as"><span class="native">&#2437;&#2488;&#2478;&#2496;&#2479;&#2492;&#2494;</span><small>Assamese</small></button>
+ <button class="lang-btn" data-lang="bn"><span class="native">&#2476;&#2494;&#2434;&#2482;&#2494;</span><small>Bengali</small></button>
+ <button class="lang-btn" data-lang="mni"><span class="native">Meitei</span><small>Manipur</small></button>
+ <button class="lang-btn" data-lang="en"><span class="native">Khasi</span><small>Meghalaya</small></button>
+ <button class="lang-btn" data-lang="en"><span class="native">Mizo</span><small>Mizoram</small></button>
+ <button class="lang-btn" data-lang="en"><span class="native">Nagamese</span><small>Nagaland</small></button>
+ <button class="lang-btn" data-lang="en"><span class="native">Nepali</span><small>Sikkim</small></button>
+ </div>
+ <div style="padding:12px;background:rgba(37,99,168,.08);border-radius:var(--radius-sm);font-size:.82rem;color:var(--text-muted);margin-bottom:16px;">
+ Emergency alerts are automatically sent in the local language of each district.
+ </div>
+ <div style="display:flex;gap:10px;">
+ <button class="btn btn-primary" id="apply-lang" style="flex:1;">Apply Language</button>
+ <button class="btn btn-ghost" data-lang-close>Cancel</button>
+ </div>
+</div>
+</div>
+
+
+<div class="toast-container" id="toast-container"></div>
+<button class="sos-btn" type="button" onclick="triggerSOSAlert()" style="font-size:.7rem;font-weight:900;color:#fff;background:#c0392b;border:none;cursor:pointer;border-radius:50%;width:56px;height:56px;position:fixed;bottom:24px;right:24px;z-index:9000;box-shadow:0 4px 16px rgba(192,57,43,.5);">SOS</button>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="assets/js/chart.min.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+ function updateClock(){
+ var now=new Date();
+ var t=document.getElementById("last-updated-time");
+ if(t){
+ var h=String(now.getHours()).padStart(2,"0");
+ var m=String(now.getMinutes()).padStart(2,"0");
+ var s=String(now.getSeconds()).padStart(2,"0");
+ t.textContent="Last updated: "+h+":"+m+":"+s+" IST";
+ }
+ }
+ setInterval(updateClock,1000);
+ updateClock();
+ document.getElementById("hamburger").addEventListener("click",function(){
+ document.getElementById("mobile-menu").classList.toggle("open");
+ });
+ document.getElementById("nav-sos").addEventListener("click",function(){
+ document.querySelector(".sos-btn").click();
+ });
+ document.getElementById("alert-bell").addEventListener("click",function(){
+ document.getElementById("alert-list").scrollIntoView({behavior:"smooth"});
+ });
+ /* mob-sos-btn handled by onclick */
+</script>
+<script src="assets/js/fixes.js"></script>
+<script>
+ // Force map resize after full page load - fixes blank Leaflet map issue
+ window.addEventListener("load", function() {
+ setTimeout(function() {
+ if (window.AppState && AppState.maps) {
+ if (AppState.maps.main) AppState.maps.main.invalidateSize();
+ if (AppState.maps.hero) AppState.maps.hero.invalidateSize();
+ }
+ }, 500);
+ });
+ window.addEventListener("resize", function() {
+ if (window.AppState && AppState.maps) {
+ if (AppState.maps.main) AppState.maps.main.invalidateSize();
+ if (AppState.maps.hero) AppState.maps.hero.invalidateSize();
+ }
+ });
+</script>
+
+
+
+
+
+<!-- ═══════════════════════════════════════════════════════
+     FIELD REPORT — COMPLETE STANDALONE HANDLER
+     No dependency on main.js. Runs after DOM loaded.
+════════════════════════════════════════════════════════════ -->
+
+<!-- SUCCESS MODAL -->
+<div id="fr-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999999;align-items:center;justify-content:center;padding:12px;">
+  <div style="background:#fff;border-radius:8px;width:100%;max-width:460px;max-height:92vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,.3);animation:frSlide .3s ease;">
+    <!-- Header -->
+    <div style="background:#003366;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-radius:8px 8px 0 0;position:sticky;top:0;z-index:2;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:26px;height:26px;background:#1a7a3e;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 5.5,10.5 12,3" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+        </div>
+        <span style="color:#fff;font-weight:700;font-size:.95rem;">Report Submitted Successfully!</span>
+      </div>
+      <button onclick="closeFRModal()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:26px;height:26px;border-radius:50%;font-size:1rem;cursor:pointer;line-height:1;">&times;</button>
+    </div>
+
+    <div style="padding:18px;">
+      <!-- Report ID -->
+      <div style="background:#e8f1fb;border:1px solid #b3ceee;border-radius:6px;padding:11px 14px;margin-bottom:16px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <div>
+          <div style="font-size:.68rem;color:#777;text-transform:uppercase;letter-spacing:.5px;">Report ID</div>
+          <div id="fr-rid" style="font-weight:800;font-size:.95rem;color:#003366;margin-top:2px;">NER-FR-XXXX</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:.68rem;color:#777;text-transform:uppercase;letter-spacing:.5px;">Submitted At</div>
+          <div id="fr-time" style="font-weight:700;font-size:.88rem;color:#444;margin-top:2px;">--:--</div>
+        </div>
+      </div>
+
+      <!-- Image preview -->
+      <div id="fr-img-section" style="display:none;margin-bottom:16px;">
+        <div style="font-size:.8rem;font-weight:700;color:#003366;margin-bottom:8px;">&#128247; Uploaded Evidence:</div>
+        <div id="fr-img-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div>
+      </div>
+
+      <!-- AI Analysis Box -->
+      <div style="border:1px solid #e0e0e0;border-radius:6px;overflow:hidden;margin-bottom:16px;">
+        <div style="background:#003366;padding:9px 14px;">
+          <span style="color:#f47920;font-size:.9rem;margin-right:6px;">&#9632;</span>
+          <span style="color:#fff;font-weight:700;font-size:.85rem;">AI Analysis — Live Status</span>
+        </div>
+        <div id="fr-steps-wrap" style="padding:14px;display:flex;flex-direction:column;gap:12px;"></div>
+        <div id="fr-result-box" style="display:none;margin:0 14px 14px;padding:10px 14px;background:#eaf5ef;border:1px solid #b5dcc5;border-radius:4px;">
+          <div style="font-weight:700;color:#1a7a3e;font-size:.88rem;margin-bottom:4px;">
+            <svg width="14" height="14" viewBox="0 0 14 14" style="vertical-align:middle;margin-right:4px;"><polyline points="2,7 5.5,10.5 12,3" stroke="#1a7a3e" stroke-width="2.5" fill="none"/></svg>
+            Analysis Complete
+          </div>
+          <div id="fr-result-text" style="font-size:.8rem;color:#444;"></div>
+          <div style="font-size:.74rem;color:#777;margin-top:5px;">Reference: <strong id="fr-ref">---</strong></div>
+        </div>
+      </div>
+
+      <button onclick="closeFRModal()" style="width:100%;padding:11px;background:#003366;color:#fff;border:none;border-radius:4px;font-size:.88rem;font-weight:700;cursor:pointer;">
+        Close &amp; Submit Another Report
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes frSpin   { to { transform: rotate(360deg); } }
+@keyframes frSlide  { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes frFadeIn { from{opacity:0} to{opacity:1} }
+</style>
+
+<script>
+// ── Uploaded files ────────────────────────────────────────────────────────
+window._frFiles = [];
+
+window.handleFileSelect = function(files) {
+  if (!files || !files.length) return;
+  window._frFiles = Array.from(files);
+  renderUploadPreview(window._frFiles);
+};
+
+function renderUploadPreview(files) {
+  var def  = document.getElementById('upload-default');
+  var prev = document.getElementById('upload-preview');
+  var grid = document.getElementById('preview-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  files.forEach(function(file) {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'border:1px solid #e0e0e0;border-radius:4px;overflow:hidden;aspect-ratio:1/1;background:#f5f5f5;position:relative;';
+    if (file.type.startsWith('image/')) {
+      var img = document.createElement('img');
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+      var reader = new FileReader();
+      reader.onload = function(ev) { img.src = ev.target.result; };
+      reader.readAsDataURL(file);
+      wrap.appendChild(img);
+    } else {
+      wrap.innerHTML = '<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;"><div style="font-size:1.4rem;">&#127916;</div><div style="font-size:.6rem;color:#777;text-align:center;margin-top:4px;">' + file.name.substring(0,18) + '</div></div>';
+    }
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);color:#fff;font-size:.58rem;padding:2px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+    lbl.textContent = file.name;
+    wrap.appendChild(lbl);
+    grid.appendChild(wrap);
+  });
+  if (def)  def.style.display  = 'none';
+  if (prev) prev.style.display = 'block';
+}
+
+window.clearUploads = function() {
+  window._frFiles = [];
+  var fi = document.getElementById('file-input');
+  if (fi) fi.value = '';
+  var def  = document.getElementById('upload-default');
+  var prev = document.getElementById('upload-preview');
+  if (def)  def.style.display  = 'block';
+  if (prev) prev.style.display = 'none';
+};
+
+// ── Drag-drop on upload zone ──────────────────────────────────────────────
+(function() {
+  var zone = document.getElementById('upload-zone');
+  if (!zone) return;
+  zone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    zone.style.borderColor = '#0057a8';
+    zone.style.background  = '#e8f1fb';
+  });
+  zone.addEventListener('dragleave', function() {
+    zone.style.borderColor = '';
+    zone.style.background  = '';
+  });
+  zone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    zone.style.borderColor = '';
+    zone.style.background  = '';
+    window._frFiles = Array.from(e.dataTransfer.files);
+    renderUploadPreview(window._frFiles);
+  });
+})();
+
+// ── Modal close ───────────────────────────────────────────────────────────
+window.closeFRModal = function() {
+  var m = document.getElementById('fr-modal');
+  if (m) m.style.display = 'none';
+};
+(function() {
+  var m = document.getElementById('fr-modal');
+  if (m) m.addEventListener('click', function(e) {
+    if (e.target === m) window.closeFRModal();
+  });
+})();
+
+// ── AI Steps data ─────────────────────────────────────────────────────────
+var FR_STEPS = [
+  { title: 'Receiving & Validating Data',   desc: 'GPS coordinates, image quality and metadata check' },
+  { title: 'Image Analysis (CNN Model)',     desc: 'Detecting cracks, slope movement, road damage' },
+  { title: 'Risk Correlation & Scoring',    desc: 'Matching with live sensor data & historical records' },
+  { title: 'Alert Generation & Dispatch',   desc: 'Notifying district admin if high risk confirmed' }
+];
+var FR_RESULTS = [
+  'Medium Risk Detected — Report forwarded to District DM Office.',
+  'High Risk Confirmed — NDRF team dispatch has been initiated.',
+  'Low Risk — Monitoring alert raised. Field team notified.',
+  'Critical Risk — Immediate evacuation advisory issued for the area.'
+];
+
+function makeStepEl(idx, step) {
+  var div = document.createElement('div');
+  div.id = 'frs-' + idx;
+  div.style.cssText = 'display:flex;align-items:flex-start;gap:12px;opacity:' + (idx === 0 ? '1' : '0.3') + ';transition:opacity .4s ease;';
+  div.innerHTML =
+    '<div id="frd-' + idx + '" style="width:22px;height:22px;border-radius:50%;border:2.5px solid #e0e0e0;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;">' +
+    (idx === 0 ? '<div style="width:18px;height:18px;border-radius:50%;border:2px solid transparent;border-top-color:#0057a8;animation:frSpin .8s linear infinite;"></div>' : '') +
+    '</div>' +
+    '<div>' +
+      '<div style="font-weight:700;font-size:.84rem;color:#003366;">' + step.title + '</div>' +
+      '<div style="font-size:.75rem;color:#777;margin-top:2px;">' + step.desc + '</div>' +
+    '</div>';
+  return div;
+}
+
+function tickStep(idx) {
+  var dot = document.getElementById('frd-' + idx);
+  if (dot) {
+    dot.style.border      = '2.5px solid #1a7a3e';
+    dot.style.background  = '#1a7a3e';
+    dot.innerHTML = '<svg width="11" height="11" viewBox="0 0 11 11"><polyline points="2,6 4.5,9 9,2.5" stroke="white" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>';
+  }
+}
+function spinStep(idx) {
+  var step = document.getElementById('frs-' + idx);
+  var dot  = document.getElementById('frd-' + idx);
+  if (step) step.style.opacity = '1';
+  if (dot) dot.innerHTML = '<div style="width:18px;height:18px;border-radius:50%;border:2px solid transparent;border-top-color:#0057a8;animation:frSpin .8s linear infinite;"></div>';
+}
+
+// ── MAIN SUBMIT HANDLER (called by onsubmit on form) ──────────────────────
+window.handleFRSubmit = function(e) {
+  e.preventDefault();
+
+  var modal = document.getElementById('fr-modal');
+  if (!modal) { alert('Modal not found'); return false; }
+
+  // Generate IDs
+  var year = new Date().getFullYear();
+  var rid  = 'NER-FR-' + year + '-' + Math.floor(1000 + Math.random() * 9000);
+  var ref  = 'NDR-' + year + '-TW-' + Math.floor(1000 + Math.random() * 8999);
+  var now  = new Date().toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' }) + ' IST';
+
+  var ridEl  = document.getElementById('fr-rid');
+  var refEl  = document.getElementById('fr-ref');
+  var timeEl = document.getElementById('fr-time');
+  if (ridEl)  ridEl.textContent  = rid;
+  if (refEl)  refEl.textContent  = ref;
+  if (timeEl) timeEl.textContent = now;
+
+  // Show uploaded images in modal
+  var imgGrid    = document.getElementById('fr-img-grid');
+  var imgSection = document.getElementById('fr-img-section');
+  if (imgGrid) imgGrid.innerHTML = '';
+  if (window._frFiles && window._frFiles.length > 0 && imgGrid) {
+    window._frFiles.forEach(function(file) {
+      var wrap = document.createElement('div');
+      wrap.style.cssText = 'border:1px solid #e0e0e0;border-radius:4px;overflow:hidden;aspect-ratio:1/1;background:#f5f5f5;';
+      if (file.type.startsWith('image/')) {
+        var img = document.createElement('img');
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+        var rd = new FileReader();
+        rd.onload = function(ev) { img.src = ev.target.result; };
+        rd.readAsDataURL(file);
+        wrap.appendChild(img);
+      } else {
+        wrap.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;">&#127916;</div>';
+      }
+      imgGrid.appendChild(wrap);
+    });
+    if (imgSection) imgSection.style.display = 'block';
+  } else {
+    if (imgSection) imgSection.style.display = 'none';
+  }
+
+  // Build steps fresh
+  var wrap = document.getElementById('fr-steps-wrap');
+  if (wrap) {
+    wrap.innerHTML = '';
+    FR_STEPS.forEach(function(s, i) { wrap.appendChild(makeStepEl(i, s)); });
+  }
+
+  // Hide result
+  var rb = document.getElementById('fr-result-box');
+  if (rb) rb.style.display = 'none';
+
+  // Show modal
+  modal.style.display = 'flex';
+
+  // Animate steps
+  var delays = [1400, 2900, 4400];
+  delays.forEach(function(delay, i) {
+    setTimeout(function() {
+      tickStep(i);
+      spinStep(i + 1);
+    }, delay);
+  });
+
+  // Final step + result
+  setTimeout(function() {
+    tickStep(3);
+    var rt = document.getElementById('fr-result-text');
+    if (rt) rt.textContent = FR_RESULTS[Math.floor(Math.random() * FR_RESULTS.length)];
+    if (rb) {
+      rb.style.display   = 'block';
+      rb.style.animation = 'frFadeIn .5s ease';
+    }
+  }, 5900);
+
+  return false; // prevent actual form submission
+};
+</script>
+
+
+<script>
+var _sosActive = false;
+window.triggerSOSAlert = function() {
+  if (_sosActive) return;
+  _sosActive = true;
+  ['nav-sos','mob-sos-btn'].forEach(function(id){
+    var b=document.getElementById(id);
+    if(b){b.textContent='SENT!';b.style.background='#27ae60';}
+  });
+  var fab=document.querySelector('.sos-btn');
+  if(fab){fab.textContent='SENT';fab.style.background='#27ae60';}
+  if(typeof showToast==='function'){
+    showToast('danger','SOS DISPATCHED','Emergency alert sent to NDRF, District DM, State EOC and local police. Help is on the way!',10000);
+  } else {
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;top:80px;right:20px;background:#c0392b;color:#fff;padding:14px 20px;border-radius:6px;z-index:99999;font-weight:700;max-width:300px;';
+    d.textContent='SOS DISPATCHED - Emergency alert sent to all agencies!';
+    document.body.appendChild(d);
+    setTimeout(function(){d.remove();},8000);
+  }
+  setTimeout(function(){
+    _sosActive=false;
+    ['nav-sos','mob-sos-btn'].forEach(function(id){
+      var b=document.getElementById(id);
+      if(b){b.textContent=id==='nav-sos'?' SOS':' SOS Alert';b.style.background='';}
+    });
+    if(fab){fab.textContent='SOS';fab.style.background='';}
+  },15000);
+};
+
+// ── Lang modal close button ────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function(){
+  var applyBtn = document.getElementById('apply-lang');
+  if(applyBtn){
+    applyBtn.onclick = function(){
+      var m = document.getElementById('lang-modal');
+      if(m){ m.classList.remove('active'); setTimeout(function(){ m.style.display='none'; }, 300); }
+    };
+  }
+  // Alert counter cycling
+  setInterval(function(){
+    var el = document.getElementById('alert-count');
+    if(el){
+      var n = Math.floor(Math.random()*4)+5;
+      el.textContent = n;
+      el.style.background = n>=8 ? '#c0392b' : '#e67e22';
+    }
+  }, 25000);
+});
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
