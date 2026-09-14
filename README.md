@@ -1,11 +1,7 @@
 # 🛡️ EarlyShield — AI-Based Landslide Early Warning System
 
-**SIH 2026 | BWU Team | North East India**
 
 EarlyShield is an AI-powered, real-time landslide prediction and early warning platform specifically built for North East India.
-
-## 🌐 Live Demo
-Open `index.html` in any browser — no server needed.
 
 ## ✨ Features
 - 🗺️ **GIS Risk Heatmap** — Interactive map with real-time risk zones across 162 NER districts
@@ -24,13 +20,6 @@ Open `index.html` in any browser — no server needed.
 - **Maps:** Leaflet.js + OpenStreetMap
 - **AI Models:** RandomForest, XGBoost, LSTM, CNN, K-Means (simulated in frontend)
 - **PWA:** Service Worker with offline caching
-
-## 🚀 Run Locally
-```bash
-git clone https://github.com/soumenr10/EarlyShield.git
-cd EarlyShield
-# Open index.html in Chrome/Firefox
-```
 
 ## 📍 Coverage
 - 8 North Eastern states
