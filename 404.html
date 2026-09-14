@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 - Page Not Found | EarlyShield</title>
+  <link rel="icon" type="image/svg+xml" href="assets/img/early-shield-logo.svg" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #0a0f1e;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+
+    .logo img {
+      width: 40px;
+      height: 40px;
+    }
+
+    .logo-text strong {
+      display: block;
+      font-size: 1.2rem;
+      color: #f47920;
+    }
+
+    .logo-text span {
+      font-size: 0.75rem;
+      color: #aaa;
+    }
+
+    .error-code {
+      font-size: 8rem;
+      font-weight: 900;
+      color: #003366;
+      line-height: 1;
+      text-shadow: 0 0 60px rgba(244,121,32,0.3);
+      letter-spacing: -4px;
+    }
+
+    .error-code span {
+      color: #f47920;
+    }
+
+    .shield-icon {
+      font-size: 3rem;
+      margin: 10px 0;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      color: #ffffff;
+      margin: 16px 0 10px;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #aaaaaa;
+      max-width: 420px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .btn-home {
+      display: inline-block;
+      background: #f47920;
+      color: white;
+      padding: 12px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      margin: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-home:hover {
+      background: #d4660f;
+    }
+
+    .btn-outline {
+      display: inline-block;
+      border: 2px solid #003366;
+      color: #60a5fa;
+      padding: 12px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      margin: 6px;
+      transition: border-color 0.2s;
+    }
+
+    .btn-outline:hover {
+      border-color: #f47920;
+      color: #f47920;
+    }
+
+    .quick-links {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid #1a2744;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .quick-links p {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 14px;
+    }
+
+    .links-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .links-grid a {
+      color: #60a5fa;
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 6px 14px;
+      border: 1px solid #1a2744;
+      border-radius: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .links-grid a:hover {
+      border-color: #f47920;
+      color: #f47920;
+    }
+
+    .footer-note {
+      margin-top: 50px;
+      font-size: 0.75rem;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logo -->
+  <div class="logo">
+    <img src="assets/img/early-shield-logo.svg" alt="EarlyShield Logo" />
+    <div class="logo-text">
+      <strong>EarlyShield</strong>
+      <span>AI Early Warning System</span>
+    </div>
+  </div>
+
+  <!-- Error Code -->
+  <div class="error-code">4<span>0</span>4</div>
+
+  <!-- Icon -->
+  <div class="shield-icon">🛡️</div>
+
+  <!-- Message -->
+  <h1>Page Not Found</h1>
+  <p>
+    The page you are looking for does not exist or has been moved.
+    Our AI is monitoring North East India — but it couldn't find this page either!
+  </p>
+
+  <!-- Buttons -->
+  <a href="index.html" class="btn-home">🏠 Go to Home</a>
+  <a href="index.html#dashboard" class="btn-outline">📊 Open Dashboard</a>
+
+  <!-- Quick Links -->
+  <div class="quick-links">
+    <p>Or jump directly to a section:</p>
+    <div class="links-grid">
+      <a href="index.html#map-section">🗺️ GIS Map</a>
+      <a href="index.html#alerts">🚨 Alerts</a>
+      <a href="index.html#sensors">📡 Sensors</a>
+      <a href="index.html#analytics">🧠 Analytics</a>
+      <a href="index.html#field-report">📋 Field Report</a>
+      <a href="index.html#weather">🌧️ Weather</a>
+      <a href="index.html#response">🚛 Response</a>
+    </div>
+  </div>
+
+  <!-- Footer Note -->
+  <div class="footer-note">
+    EarlyShield · SIH 2026 · BWU Team · AI-Based Landslide Early Warning System · NER India
+  </div>
+
+</body>
+</html>
